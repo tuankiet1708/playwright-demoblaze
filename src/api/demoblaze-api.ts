@@ -10,6 +10,8 @@ interface ApiResponseBody {
 }
 
 function normalizeStringPayload(payload: string): ApiResponseBody {
+  // DemoBlaze frequently wraps plain text responses in JSON string quotes.
+  // Normalize once so downstream assertions can remain format-agnostic.
   const normalized = payload.replace(/^"|"$/g, '').trim();
 
   if (normalized.startsWith('Auth_token:')) {
@@ -35,6 +37,8 @@ async function parseBody(responseText: string): Promise<ApiResponseBody> {
   }
 
   try {
+    // Response body can be either JSON object or a JSON-encoded string.
+    // Example: "Auth_token: <token>".
     const parsed = JSON.parse(responseText) as ApiResponseBody | string;
 
     if (typeof parsed === 'string') {
@@ -72,6 +76,8 @@ export class DemoblazeApiClient {
     // DemoBlaze may return an error if user already exists, but random usernames keep this unlikely.
     expect(signupResponse.errorMessage ?? '').not.toContain('This user already exist');
 
+    // Signup can succeed while login token issuance lags briefly.
+    // Retry login readiness to reduce eventual-consistency flakiness.
     await this.waitUntilUserCanLogin(credentials);
   }
 
@@ -87,6 +93,7 @@ export class DemoblazeApiClient {
       }
 
       if (attempt < maxAttempts) {
+        // Light backoff lowers request burst risk while keeping setup fast.
         await new Promise((resolve) => setTimeout(resolve, 400 * attempt));
       }
     }

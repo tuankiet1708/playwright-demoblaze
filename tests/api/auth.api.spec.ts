@@ -4,6 +4,7 @@ import { createUserCredentials } from '../../src/utils/data-factory';
 
 test.describe('Authentication API @api', () => {
   test('should create new user using signup endpoint @smoke', async ({ apiClient }) => {
+    // Fresh credentials avoid false negatives from duplicate-user conflicts.
     const user = createUserCredentials(env.defaultPassword);
     const signupResponse = await apiClient.signup(user);
 
@@ -14,6 +15,7 @@ test.describe('Authentication API @api', () => {
     const user = createUserCredentials(env.defaultPassword);
     await apiClient.createFreshUser(user);
 
+    // API parser normalizes token response regardless of JSON vs plain-string format.
     const loginResponse = await apiClient.login(user);
     expect(String(loginResponse.Auth_token ?? '')).not.toEqual('');
   });

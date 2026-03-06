@@ -11,6 +11,8 @@ export async function registerUserViaUI(
   signupPage: SignupPage,
   user: UserCredentials,
 ): Promise<void> {
+  // For UI suites, create the account through the real signup modal instead of API seeding.
+  // This keeps setup aligned with end-user behavior and avoids UI/API state timing mismatches.
   await homePage.goto();
   await homePage.openSignupModal();
 

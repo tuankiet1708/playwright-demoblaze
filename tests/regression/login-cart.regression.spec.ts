@@ -14,6 +14,7 @@ test.describe('End-to-end regression @regression', () => {
     signupPage,
     cartPage,
   }) => {
+    // Single journey smoke for critical business path coverage in regression runs.
     const user = createUserCredentials(env.defaultPassword);
     await registerUserViaUI(page, homePage, signupPage, user);
 

@@ -14,6 +14,7 @@ test.describe('Cart and Order Feature @ui @cart', () => {
     signupPage,
     cartPage,
   }) => {
+    // Create isolated account per test to avoid shared cart/order state.
     const user = createUserCredentials(env.defaultPassword);
     await registerUserViaUI(page, homePage, signupPage, user);
 
@@ -29,6 +30,7 @@ test.describe('Cart and Order Feature @ui @cart', () => {
     await homePage.goToCart();
     await cartPage.expectProductInCart(PRODUCT_NAME);
 
+    // Assert key purchase receipt fields so we validate order completion end-to-end.
     const confirmationText = await cartPage.completeOrder(createOrderDetails());
     await expect(confirmationText).toContain('Id:');
     await expect(confirmationText).toContain('Amount:');
@@ -54,6 +56,7 @@ test.describe('Cart and Order Feature @ui @cart', () => {
     }, 'Product added.');
 
     await homePage.goToCart();
+    // Required field validation is surfaced by browser alert in this flow.
     await expectDialogAndAccept(page, async () => {
       await cartPage.submitOrderWithoutRequiredFields();
     }, 'Please fill out Name and Creditcard.');
@@ -78,6 +81,7 @@ test.describe('Cart and Order Feature @ui @cart', () => {
     }, 'Product added.');
 
     await homePage.goToCart();
+    // Deletion can be asynchronous on DemoBlaze; page object waits for row removal.
     await cartPage.removeFirstProduct();
     await expect(cartPage.rows).toHaveCount(0);
   });

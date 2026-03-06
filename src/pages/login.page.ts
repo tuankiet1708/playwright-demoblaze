@@ -17,6 +17,8 @@ export class LoginPage {
     await expect(this.modal).toBeVisible();
     await this.usernameInput.fill(username);
     await this.passwordInput.fill(password);
+    // Modal animations occasionally intercept the click target in DemoBlaze.
+    // Force click reduces intermittent overlay-related flakes.
     await this.submitButton.click({ force: true });
   }
 
@@ -24,6 +26,7 @@ export class LoginPage {
     await expect(this.modal).toBeVisible();
     await this.usernameInput.clear();
     await this.passwordInput.clear();
+    // Same reasoning as login(): keep negative-path dialog checks stable.
     await this.submitButton.click({ force: true });
   }
 }

@@ -11,6 +11,7 @@ test.describe('Login Feature @ui @login', () => {
     loginPage,
     signupPage,
   }) => {
+    // Seed account through UI to exercise the same path users take.
     const user = createUserCredentials(env.defaultPassword);
     await registerUserViaUI(page, homePage, signupPage, user);
 
@@ -24,6 +25,7 @@ test.describe('Login Feature @ui @login', () => {
     await homePage.goto();
     await homePage.openLoginModal();
 
+    // DemoBlaze returns this failure via alert dialog rather than inline form errors.
     await expectDialogAndAccept(page, async () => {
       await loginPage.login(`unknown-${Date.now()}`, 'invalid-password');
     }, /(Wrong password\.|User does not exist\.)/i);
@@ -33,6 +35,7 @@ test.describe('Login Feature @ui @login', () => {
     await homePage.goto();
     await homePage.openLoginModal();
 
+    // Empty credentials are validated client-side and surfaced as alert text.
     await expectDialogAndAccept(page, async () => {
       await loginPage.submitEmptyCredentials();
     }, 'Please fill out Username and Password.');

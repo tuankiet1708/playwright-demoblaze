@@ -13,10 +13,12 @@ export interface OrderDetails {
 }
 
 function nowToken(): string {
+  // Keep generated identifiers compact and filesystem/report friendly.
   return `${Date.now()}${Math.floor(1000 + Math.random() * 9000)}`;
 }
 
 export function createUserCredentials(password: string): UserCredentials {
+  // Username uniqueness prevents collisions in parallel CI runs.
   return {
     username: `autouser-${nowToken()}`,
     password,
@@ -24,6 +26,7 @@ export function createUserCredentials(password: string): UserCredentials {
 }
 
 export function createOrderDetails(): OrderDetails {
+  // Use realistic but synthetic data so tests remain deterministic and non-sensitive.
   return {
     name: `Auto Buyer ${Math.floor(Math.random() * 100)}`,
     country: 'Vietnam',
